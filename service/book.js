@@ -120,11 +120,41 @@ async function getBook(fileName) {
     }
 }
 
+/**
+ * 删除电子书
+ */
+function deleteBook(fileName){
+    return new Promise(async (resolve, reject) => {
+        try {
+            let book = getBook(fileName);
+            if (book) {
+                if (Number(book.updateType) === 0) {
+                    reject(new Error('默认电子书不能删除'));
+                } else {
+                    const bookObject = new Book(null, book);
+                    const sql = `DELETE FROM book WHERE fileName='${fileName}'`
+                    db.querySql(sql).then(() => {
+                        bookObject.reset();
+                        resolve();
+                    })
+                }
+            } else {
+                reject(new Error('电子书不存在'))
+            }
+        } catch (e) {
+            reject(e)
+        }
+    })
+
+
+}
+
 
 
 module.exports = {
     insertBook,
-    getBook
+    getBook,
+    deleteBook
 }
 
 

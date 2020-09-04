@@ -67,7 +67,6 @@ router.get("/get",function (req, res, next) {
     decode(req)
     // 获取解析传入参数
     const {fileName} = req.query
-    console.log("-------------------:"+fileName)
     //查询数据局数据信息
     bookService.getBook(fileName).then(book=>{
         new Result(book).success(res)
@@ -75,8 +74,29 @@ router.get("/get",function (req, res, next) {
         console.log('/book/get', err)
         next(boom.badImplementation(err))
     })
-
-
 })
+
+/**
+ * 删除电子书
+ */
+
+router.get("delete", function (req, res, next) {
+    decode(req)
+    // 获取解析传入参数
+    const {fileName} = req.query;
+    //从数据库中删除电子书与存储的电子书
+    if (!fileName) {
+        next(boom.badRequest(new Error('参数fileName不能为空')));
+    } else {
+        bookService.deleteBook(fileName)
+            .then(()=>{
+                new Result(null, "删除成功").success(res);
+            }).catch(err=>{
+            console.log('/book/delete', err)
+            next(boom.badImplementation(err))
+            })
+    }
+
+});
 
 module.exports = router
