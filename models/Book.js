@@ -7,7 +7,8 @@ const {
     UPLOAD_PATH,
     UPLOAD_URL,
     MIME_TYPE_EPUB,
-    UPDATE_TYPE_FROM_WEB
+    UPDATE_TYPE_FROM_WEB,
+    OLD_UPLOAD_URL
 } = require("../utils/constant")
 
 class Book {

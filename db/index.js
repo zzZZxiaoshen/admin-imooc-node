@@ -14,6 +14,39 @@ function connect() {
 }
 
 
+function orLike(where, k, v) {
+    if (where === 'where') {
+        return where + ` ${k} like '%${v}%'`
+    } else {
+        return where + ` or ${k} like '%${v}%'`
+    }
+}
+
+function andLike(where, k, v) {
+    if (where === 'where') {
+        return where + ` ${k} like '%${v}%'`
+    } else {
+        return where + ` and ${k} like '%${v}%'`
+    }
+}
+
+function or(where, k, v) {
+    if (where === 'where') {
+        return where + ` ${k}='${v}'`
+    } else {
+        return where + ` or ${k}='${v}'`
+    }
+}
+
+function and(where, k, v) {
+    if (where === 'where') {
+        return where + ` ${k}='${v}'`
+    } else {
+        return where + ` and ${k}='${v}'`
+    }
+}
+
+
 function querySql(sql) {
     const conn = connect()
     debug && console.log(sql)
@@ -93,5 +126,7 @@ function insert(model, tableName) {
 module.exports= {
     querySql,
     queryOne,
-    insert
+    insert,
+    andLike,
+    and,
 }

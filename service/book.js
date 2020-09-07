@@ -149,12 +149,78 @@ function deleteBook(fileName){
 
 }
 
+/**
+ * 图书列表
+ */
+ async function listBook( p){
+     // 结构查询条件
+    const {
+        page = 1,
+        pageSize = 20,
+        sort,
+        title,
+        category,
+        author
+    } = p;
+    const offset = (page - 1) * pageSize;
+    let bookSql = 'select * from book'
+    let where = 'where'
+    title && (where = db.andLike(where, 'title', title))
+    author && (where = db.andLike(where, 'author', author))
+    category && (where = db.and(where, 'categoryText', category))
+    if (where !== 'where') {
+        bookSql = `${bookSql} ${where}`
+    }
+    if (sort) {
+        const symbol = sort[0]
+        const column = sort.slice(1, sort.length)
+        const order = symbol === '+' ? 'asc' : 'desc'
+        bookSql = `${bookSql} order by ${column} ${order}`
+    }
+    bookSql = `${bookSql} limit ${pageSize} offset ${offset}`
+    let countSql = `select count(*) as count from book`
+    if (where !== 'where') {
+        countSql = `${countSql} ${where}`
+    }
+    const list = await db.querySql(bookSql)
+    console.log(bookSql, '\n', countSql)
+    list.forEach(book => book.cover = Book.genCoverUrl(book))
+    const count = await db.querySql(countSql)
+    return { list, count: count[0].count, page, pageSize }
+ }
+
+ /**
+ *  书籍分类
+  */
+ function getCategory(){
+     return new Promise((resolve, reject) => {
+         try {
+             const sql = 'select * from category order by category asc'
+             const result = db.querySql(sql);
+             const categoryList = []
+             console.log("-----------------:"+JSON.stringify(result))
+             result.forEach(item => {
+                 categoryList.push({
+                     label: item.categoryText,
+                     value: item.category,
+                     num: item.num
+                 })
+             })
+             resolve(categoryList)
+         } catch (e) {
+             reject(e);
+         }
+     })
+ }
+
 
 
 module.exports = {
     insertBook,
     getBook,
-    deleteBook
+    deleteBook,
+    listBook,
+    getCategory
 }
 
 
